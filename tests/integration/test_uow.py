@@ -1,4 +1,3 @@
-# pylint: disable=broad-except
 import threading
 import time
 import traceback

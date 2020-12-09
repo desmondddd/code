@@ -12,8 +12,8 @@ class InvalidSku(Exception):
 
 
 def add_batch(
-        ref: str, sku: str, qty: int, eta: Optional[date],
-        uow: unit_of_work.AbstractUnitOfWork
+    ref: str, sku: str, qty: int, eta: Optional[date],
+    uow: unit_of_work.AbstractUnitOfWork
 ):
     with uow:
         product = uow.products.get(sku=sku)
@@ -25,8 +25,8 @@ def add_batch(
 
 
 def allocate(
-        orderid: str, sku: str, qty: int,
-        uow: unit_of_work.AbstractUnitOfWork
+    orderid: str, sku: str, qty: int,
+    uow: unit_of_work.AbstractUnitOfWork
 ) -> str:
     line = OrderLine(orderid, sku, qty)
     with uow:

@@ -6,7 +6,6 @@ from sqlalchemy.orm import mapper, relationship
 
 from allocation.domain import model
 
-
 metadata = MetaData()
 
 order_lines = Table(
