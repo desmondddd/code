@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional, List, Set
+from typing import List, Optional, Set
+
 from . import commands, events
 
 
@@ -37,6 +39,7 @@ class Product:
             self.events.append(
                 commands.Allocate(line.orderid, line.sku, line.qty)
             )
+
 
 @dataclass(unsafe_hash=True)
 class OrderLine:

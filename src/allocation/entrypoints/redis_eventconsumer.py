@@ -1,10 +1,11 @@
 import json
 import logging
+
 import redis
 
 from allocation import config
-from allocation.domain import commands
 from allocation.adapters import orm
+from allocation.domain import commands
 from allocation.service_layer import messagebus, unit_of_work
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,7 @@ def handle_change_batch_quantity(m):
     data = json.loads(m['data'])
     cmd = commands.ChangeBatchQuantity(ref=data['batchref'], qty=data['qty'])
     messagebus.handle(cmd, uow=unit_of_work.SqlAlchemyUnitOfWork())
+
 
 if __name__ == '__main__':
     main()

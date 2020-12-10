@@ -1,6 +1,7 @@
 from allocation.adapters import repository
 from allocation.domain import model
 
+
 def test_get_by_batchref(session):
     repo = repository.SqlAlchemyRepository(session)
     b1 = model.Batch(ref='b1', sku='sku1', qty=100, eta=None)

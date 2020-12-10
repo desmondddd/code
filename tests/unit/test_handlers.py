@@ -1,9 +1,11 @@
 # pylint: disable=no-self-use
 from datetime import date
 from unittest import mock
+
 import pytest
+
 from allocation.adapters import repository
-from allocation.domain import commands, events
+from allocation.domain import commands
 from allocation.service_layer import handlers, messagebus, unit_of_work
 
 
@@ -39,7 +41,6 @@ class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
         pass
 
 
-
 class TestAddBatch:
 
     def test_for_new_product(self):
@@ -50,7 +51,6 @@ class TestAddBatch:
         assert uow.products.get("CRUNCHY-ARMCHAIR") is not None
         assert uow.committed
 
-
     def test_for_existing_product(self):
         uow = FakeUnitOfWork()
         messagebus.handle(commands.CreateBatch("b1", "GARISH-RUG", 100, None), uow)
@@ -58,12 +58,10 @@ class TestAddBatch:
         assert "b2" in [b.reference for b in uow.products.get("GARISH-RUG").batches]
 
 
-
 @pytest.fixture(autouse=True)
 def fake_redis_publish():
     with mock.patch("allocation.adapters.redis_eventpublisher.publish"):
         yield
-
 
 
 class TestAllocate:
@@ -79,7 +77,6 @@ class TestAllocate:
         assert results.pop(0) == "batch1"
         [batch] = uow.products.get("COMPLICATED-LAMP").batches
         assert batch.available_quantity == 90
-
 
     def test_errors_for_invalid_sku(self):
         uow = FakeUnitOfWork()
@@ -100,7 +97,6 @@ class TestAllocate:
         )
         assert uow.committed
 
-
     def test_sends_email_on_out_of_stock_error(self):
         uow = FakeUnitOfWork()
         messagebus.handle(
@@ -116,7 +112,6 @@ class TestAllocate:
             )
 
 
-
 class TestChangeBatchQuantity:
 
     def test_changes_available_quantity(self):
@@ -130,7 +125,6 @@ class TestChangeBatchQuantity:
         messagebus.handle(commands.ChangeBatchQuantity("batch1", 50), uow)
 
         assert batch.available_quantity == 50
-
 
     def test_reallocates_if_necessary(self):
         uow = FakeUnitOfWork()

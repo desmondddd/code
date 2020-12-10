@@ -1,6 +1,7 @@
 import pytest
-from ..random_refs import random_batchref, random_orderid, random_sku
+
 from . import api_client
+from ..random_refs import random_batchref, random_orderid, random_sku
 
 
 @pytest.mark.usefixtures('postgres_db')
@@ -18,7 +19,6 @@ def test_happy_path_returns_201_and_allocated_batch():
 
     assert response.status_code == 201
     assert response.json()['batchref'] == earlybatch
-
 
 
 @pytest.mark.usefixtures('postgres_db')
