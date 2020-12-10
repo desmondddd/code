@@ -1,4 +1,3 @@
-# pylint: disable=broad-except
 from __future__ import annotations
 
 import logging

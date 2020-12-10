@@ -9,7 +9,6 @@ pytest-icdiff = "*"
 mypy = "*"
 requests = "*"
 redis = "*"
-pylint = "*"
 
 [packages]
 tenacity = "*"

@@ -1,4 +1,3 @@
-# pylint: disable=no-self-use
 from datetime import date
 from unittest import mock
 

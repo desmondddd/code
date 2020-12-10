@@ -7,7 +7,6 @@ psycopg2-binary
 pytest
 pytest-icdiff
 mypy
-pylint
 requests
 redis
 tenacity
