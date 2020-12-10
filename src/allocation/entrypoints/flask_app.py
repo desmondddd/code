@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 from datetime import datetime
+
 from flask import Flask, jsonify, request
 
-from allocation.domain import events
 from allocation.adapters import orm
+from allocation.domain import events
 from allocation.service_layer import messagebus, unit_of_work
 from allocation.service_layer.handlers import InvalidSku
 

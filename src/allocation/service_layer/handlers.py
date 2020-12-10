@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 from allocation.adapters import email
 from allocation.domain import events, model
 from allocation.domain.model import OrderLine
+
 if TYPE_CHECKING:
     from . import unit_of_work
 
@@ -11,9 +14,7 @@ class InvalidSku(Exception):
     pass
 
 
-def add_batch(
-        event: events.BatchCreated, uow: unit_of_work.AbstractUnitOfWork
-):
+def add_batch(event: events.BatchCreated, uow: unit_of_work.AbstractUnitOfWork, ):
     with uow:
         product = uow.products.get(sku=event.sku)
         if product is None:
@@ -25,9 +26,7 @@ def add_batch(
         uow.commit()
 
 
-def allocate(
-        event: events.AllocationRequired, uow: unit_of_work.AbstractUnitOfWork
-) -> str:
+def allocate(event: events.AllocationRequired, uow: unit_of_work.AbstractUnitOfWork, ) -> str:
     line = OrderLine(event.orderid, event.sku, event.qty)
     with uow:
         product = uow.products.get(sku=line.sku)
@@ -38,21 +37,14 @@ def allocate(
         return batchref
 
 
-
-def change_batch_quantity(
-        event: events.BatchQuantityChanged, uow: unit_of_work.AbstractUnitOfWork
-):
+def change_batch_quantity(event: events.BatchQuantityChanged, uow: unit_of_work.AbstractUnitOfWork, ):
     with uow:
         product = uow.products.get_by_batchref(batchref=event.ref)
         product.change_batch_quantity(ref=event.ref, qty=event.qty)
         uow.commit()
 
 
-# pylint: disable=unused-argument
-
-def send_out_of_stock_notification(
-        event: events.OutOfStock, uow: unit_of_work.AbstractUnitOfWork,
-):
+def send_out_of_stock_notification(event: events.OutOfStock, uow: unit_of_work.AbstractUnitOfWork, ):
     email.send(
         'stock@made.com',
         f'Out of stock for {event.sku}',
