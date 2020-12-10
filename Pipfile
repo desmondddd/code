@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://mirrors.aliyun.com/pypi/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pytest-icdiff = "*"
+mypy = "*"
+requests = "*"
+redis = "*"
+pylint = "*"
+
+[packages]
+tenacity = "*"
+sqlalchemy = "*"
+flask = "*"
+psycopg2-binary = "*"
+
+[requires]
+python_version = "3.9"
