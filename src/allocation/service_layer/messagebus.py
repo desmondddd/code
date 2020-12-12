@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, Dict, List, TYPE_CHECKING, Type, Union
+from typing import Callable, TYPE_CHECKING, Type, Union
 
 from allocation.domain import commands, events
-from . import handlers
+from allocation.service_layer import handlers
 
 if TYPE_CHECKING:
     from . import unit_of_work
@@ -16,9 +16,8 @@ Message = Union[commands.Command, events.Event]
 
 def handle(message: Message, uow: unit_of_work.AbstractUnitOfWork):
     results = []
-    queue = [message]
-    while queue:
-        message = queue.pop(0)
+    queue = [message, ]
+    while message := queue.pop(0) if queue else None:
         if isinstance(message, events.Event):
             handle_event(message, queue, uow)
         elif isinstance(message, commands.Command):
@@ -31,7 +30,7 @@ def handle(message: Message, uow: unit_of_work.AbstractUnitOfWork):
 
 def handle_event(
     event: events.Event,
-    queue: List[Message],
+    queue: list[Message],
     uow: unit_of_work.AbstractUnitOfWork
 ):
     for handler in EVENT_HANDLERS[type(event)]:
@@ -46,7 +45,7 @@ def handle_event(
 
 def handle_command(
     command: commands.Command,
-    queue: List[Message],
+    queue: list[Message],
     uow: unit_of_work.AbstractUnitOfWork
 ):
     logger.debug('handling command %s', command)
@@ -60,13 +59,13 @@ def handle_command(
         raise
 
 
-EVENT_HANDLERS = {
+EVENT_HANDLERS: dict[Type[events.Event], list[Callable]] = {
     events.Allocated: [handlers.publish_allocated_event],
     events.OutOfStock: [handlers.send_out_of_stock_notification],
-}  # type: Dict[Type[events.Event], List[Callable]]
+}
 
-COMMAND_HANDLERS = {
+COMMAND_HANDLERS: dict[Type[commands.Command], Callable] = {
     commands.Allocate: handlers.allocate,
     commands.CreateBatch: handlers.add_batch,
     commands.ChangeBatchQuantity: handlers.change_batch_quantity,
-}  # type: Dict[Type[commands.Command], Callable]
+}

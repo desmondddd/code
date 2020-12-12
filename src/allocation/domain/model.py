@@ -2,24 +2,22 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from typing import List, Optional, Set
+from typing import Optional, Union
 
-from . import commands, events
+from allocation.domain import commands, events
 
 
 class Product:
 
-    def __init__(self, sku: str, batches: List[Batch], version_number: int = 0):
+    def __init__(self, sku: str, batches: list[Batch], version_number: int = 0):
         self.sku = sku
         self.batches = batches
         self.version_number = version_number
-        self.events = []  # type: List[events.Event]
+        self.events: list[Union[events.Event, commands.Command]] = []
 
-    def allocate(self, line: OrderLine) -> str:
+    def allocate(self, line: OrderLine) -> Optional[str]:
         try:
-            batch = next(
-                b for b in sorted(self.batches) if b.can_allocate(line)
-            )
+            batch = next(b for b in sorted(self.batches) if b.can_allocate(line))
             batch.allocate(line)
             self.version_number += 1
             self.events.append(events.Allocated(
@@ -36,9 +34,7 @@ class Product:
         batch._purchased_quantity = qty
         while batch.available_quantity < 0:
             line = batch.deallocate_one()
-            self.events.append(
-                commands.Allocate(line.orderid, line.sku, line.qty)
-            )
+            self.events.append(commands.Allocate(line.orderid, line.sku, line.qty))
 
 
 @dataclass(unsafe_hash=True)
@@ -49,14 +45,12 @@ class OrderLine:
 
 
 class Batch:
-    def __init__(
-        self, ref: str, sku: str, qty: int, eta: Optional[date]
-    ):
+    def __init__(self, ref: str, sku: str, qty: int, eta: Optional[date]):
         self.reference = ref
         self.sku = sku
         self.eta = eta
         self._purchased_quantity = qty
-        self._allocations = set()  # type: Set[OrderLine]
+        self._allocations: set[OrderLine] = set()
 
     def __repr__(self):
         return f'<Batch {self.reference}>'

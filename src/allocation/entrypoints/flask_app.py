@@ -31,7 +31,7 @@ def allocate_endpoint():
             request.json['orderid'], request.json['sku'], request.json['qty'],
         )
         uow = unit_of_work.SqlAlchemyUnitOfWork()
-        results = messagebus.handle(cmd, uow)
+        results = messagebus.handle(message=cmd, uow=uow)
         batchref = results.pop(0)
     except InvalidSku as e:
         return jsonify({'message': str(e)}), 400
