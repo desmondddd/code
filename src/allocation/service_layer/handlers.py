@@ -1,21 +1,22 @@
-#pylint: disable=unused-argument
 from __future__ import annotations
+
 from dataclasses import asdict
-from typing import List, Dict, Callable, Type, TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING, Type
+
 from allocation.domain import commands, events, model
 from allocation.domain.model import OrderLine
+
 if TYPE_CHECKING:
     from allocation.adapters import notifications
-    from . import unit_of_work
+    from allocation.service_layer import unit_of_work
 
 
 class InvalidSku(Exception):
     pass
 
 
-
 def add_batch(
-        cmd: commands.CreateBatch, uow: unit_of_work.AbstractUnitOfWork
+    cmd: commands.CreateBatch, uow: unit_of_work.AbstractUnitOfWork
 ):
     with uow:
         product = uow.products.get(sku=cmd.sku)
@@ -29,7 +30,7 @@ def add_batch(
 
 
 def allocate(
-        cmd: commands.Allocate, uow: unit_of_work.AbstractUnitOfWork
+    cmd: commands.Allocate, uow: unit_of_work.AbstractUnitOfWork
 ):
     line = OrderLine(cmd.orderid, cmd.sku, cmd.qty)
     with uow:
@@ -41,13 +42,13 @@ def allocate(
 
 
 def reallocate(
-        event: events.Deallocated, uow: unit_of_work.AbstractUnitOfWork
+    event: events.Deallocated, uow: unit_of_work.AbstractUnitOfWork
 ):
     allocate(commands.Allocate(**asdict(event)), uow=uow)
 
 
 def change_batch_quantity(
-        cmd: commands.ChangeBatchQuantity, uow: unit_of_work.AbstractUnitOfWork
+    cmd: commands.ChangeBatchQuantity, uow: unit_of_work.AbstractUnitOfWork
 ):
     with uow:
         product = uow.products.get_by_batchref(batchref=cmd.ref)
@@ -55,10 +56,8 @@ def change_batch_quantity(
         uow.commit()
 
 
-#pylint: disable=unused-argument
-
 def send_out_of_stock_notification(
-        event: events.OutOfStock, notifications: notifications.AbstractNotifications,
+    event: events.OutOfStock, notifications: notifications.AbstractNotifications,
 ):
     notifications.send(
         'stock@made.com',
@@ -67,13 +66,13 @@ def send_out_of_stock_notification(
 
 
 def publish_allocated_event(
-        event: events.Allocated, publish: Callable,
+    event: events.Allocated, publish: Callable,
 ):
     publish('line_allocated', event)
 
 
 def add_allocation_to_read_model(
-        event: events.Allocated, uow: unit_of_work.SqlAlchemyUnitOfWork,
+    event: events.Allocated, uow: unit_of_work.SqlAlchemyUnitOfWork,
 ):
     with uow:
         uow.session.execute(
@@ -85,7 +84,7 @@ def add_allocation_to_read_model(
 
 
 def remove_allocation_from_read_model(
-        event: events.Deallocated, uow: unit_of_work.SqlAlchemyUnitOfWork,
+    event: events.Deallocated, uow: unit_of_work.SqlAlchemyUnitOfWork,
 ):
     with uow:
         uow.session.execute(
@@ -96,14 +95,14 @@ def remove_allocation_from_read_model(
         uow.commit()
 
 
-EVENT_HANDLERS = {
+EVENT_HANDLERS: dict[Type[events.Event], list[Callable]] = {
     events.Allocated: [publish_allocated_event, add_allocation_to_read_model],
     events.Deallocated: [remove_allocation_from_read_model, reallocate],
     events.OutOfStock: [send_out_of_stock_notification],
-}  # type: Dict[Type[events.Event], List[Callable]]
+}
 
-COMMAND_HANDLERS = {
+COMMAND_HANDLERS: dict[Type[commands.Command], Callable] = {
     commands.Allocate: allocate,
     commands.CreateBatch: add_batch,
     commands.ChangeBatchQuantity: change_batch_quantity,
-}  # type: Dict[Type[commands.Command], Callable]
+}

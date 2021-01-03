@@ -1,8 +1,9 @@
-# pylint: disable=redefined-outer-name
 from datetime import date
-from sqlalchemy.orm import clear_mappers
 from unittest import mock
+
 import pytest
+from sqlalchemy.orm import clear_mappers
+
 from allocation import bootstrap, views
 from allocation.domain import commands
 from allocation.service_layer import unit_of_work
@@ -20,6 +21,7 @@ def sqlite_bus(sqlite_session_factory):
     )
     yield bus
     clear_mappers()
+
 
 def test_allocations_view(sqlite_bus):
     sqlite_bus.handle(commands.CreateBatch('sku1batch', 'sku1', 50, None))

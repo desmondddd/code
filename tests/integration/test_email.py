@@ -1,12 +1,12 @@
-#pylint: disable=redefined-outer-name
 import pytest
 import requests
 from sqlalchemy.orm import clear_mappers
+
 from allocation import bootstrap, config
-from allocation.domain import commands
 from allocation.adapters import notifications
+from allocation.domain import commands
 from allocation.service_layer import unit_of_work
-from ..random_refs import random_sku
+from tests.random_refs import random_sku
 
 
 @pytest.fixture

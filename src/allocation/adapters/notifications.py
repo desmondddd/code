@@ -1,6 +1,6 @@
-#pylint: disable=too-few-public-methods
 import abc
 import smtplib
+
 from allocation import config
 
 
@@ -13,7 +13,6 @@ class AbstractNotifications(abc.ABC):
 
 DEFAULT_HOST = config.get_email_host_and_port()['host']
 DEFAULT_PORT = config.get_email_host_and_port()['port']
-
 
 
 class EmailNotifications(AbstractNotifications):

@@ -1,5 +1,6 @@
 import json
 import logging
+
 import redis
 
 from allocation import bootstrap, config
@@ -8,7 +9,6 @@ from allocation.domain import commands
 logger = logging.getLogger(__name__)
 
 r = redis.Redis(**config.get_redis_host_and_port())
-
 
 
 def main():

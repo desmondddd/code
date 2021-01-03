@@ -1,5 +1,6 @@
 import inspect
 from typing import Callable
+
 from allocation.adapters import orm, redis_eventpublisher
 from allocation.adapters.notifications import (
     AbstractNotifications, EmailNotifications
@@ -13,7 +14,6 @@ def bootstrap(
     notifications: AbstractNotifications = None,
     publish: Callable = redis_eventpublisher.publish,
 ) -> messagebus.MessageBus:
-
     if notifications is None:
         notifications = EmailNotifications()
 
