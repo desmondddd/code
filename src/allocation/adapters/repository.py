@@ -1,8 +1,8 @@
 import abc
 from typing import Set
+
 from allocation.adapters import orm
 from allocation.domain import model
-
 
 
 class AbstractRepository(abc.ABC):
@@ -37,8 +37,6 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def _get_by_batchref(self, batchref) -> model.Product:
         raise NotImplementedError
-
-
 
 
 class SqlAlchemyRepository(AbstractRepository):

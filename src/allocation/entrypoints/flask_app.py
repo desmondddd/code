@@ -1,11 +1,12 @@
 from datetime import datetime
+
 from flask import Flask, jsonify, request
 
-from allocation.domain import commands
+from allocation import views
 from allocation.adapters import orm
+from allocation.domain import commands
 from allocation.service_layer import messagebus, unit_of_work
 from allocation.service_layer.handlers import InvalidSku
-from allocation import views
 
 app = Flask(__name__)
 orm.start_mappers()

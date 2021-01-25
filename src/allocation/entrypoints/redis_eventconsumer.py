@@ -1,10 +1,11 @@
 import json
 import logging
+
 import redis
 
 from allocation import config
-from allocation.domain import commands
 from allocation.adapters import orm
+from allocation.domain import commands
 from allocation.service_layer import messagebus, unit_of_work
 
 logger = logging.getLogger(__name__)

@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional, List, Set
-from . import commands, events
+from typing import List, Optional, Set
+
+from allocation.domain import events
 
 
 class Product:
@@ -37,6 +39,7 @@ class Product:
             self.events.append(
                 events.Deallocated(line.orderid, line.sku, line.qty)
             )
+
 
 @dataclass(unsafe_hash=True)
 class OrderLine:
